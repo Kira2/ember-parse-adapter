@@ -1,4 +1,4 @@
-import Ember from "ember";
+import { typeOf } from "@ember/utils";
 import DS from "ember-data";
 
 /*
@@ -27,7 +27,7 @@ export default DS.Transform.extend({
       return null;
     }
 
-    if (Ember.typeOf(serialized) === "object") {
+    if (typeOf(serialized) === "object") {
       return new Date( serialized.iso );
     }
 

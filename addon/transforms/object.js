@@ -1,4 +1,4 @@
-import Ember from "ember";
+import { isBlank } from "@ember/utils";
 import DS from "ember-data";
 
 /*
@@ -24,7 +24,7 @@ export default DS.Transform.extend({
   * @function deserialize
   */
   deserialize: function(serialized) {
-    return Ember.isBlank(serialized) ? {} : serialized;
+    return isBlank(serialized) ? {} : serialized;
   },
 
 
@@ -32,6 +32,6 @@ export default DS.Transform.extend({
   * @function serialize
   */
   serialize: function(deserialized) {
-    return Ember.isBlank(deserialized) ? {} : deserialized;
+    return isBlank(deserialized) ? {} : deserialized;
   }
 });

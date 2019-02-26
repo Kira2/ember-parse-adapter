@@ -1,21 +1,17 @@
-import Ember from "ember";
-import { test } from "ember-qunit";
-import startApp from "../../helpers/start-app";
+import { module, test } from "qunit";
+import { setupApplicationTest } from "ember-qunit";
+import { run } from "@ember/runloop";
 
 var App;
 
 module( "Integration - initializer:initialize", {
   beforeEach: function() {
     App = startApp({
-      parseUrl: 'http://localhost:1337',
-      parseNamespace: 'parse',
-      applicationId: '6ZNbAMXjYcg8BLakQ8AVyFWyfA6cTWwPwLb2Gzii',
-      restApiId: 'E2gCZw7WFgz3jfXhxjz9YnconZrbkTDgCUpLFQqy'
+      parseUrl: "http://localhost:1337",
+      parseNamespace: "parse",
+      applicationId: "6ZNbAMXjYcg8BLakQ8AVyFWyfA6cTWwPwLb2Gzii",
+      restApiId: "E2gCZw7WFgz3jfXhxjz9YnconZrbkTDgCUpLFQqy"
     });
-  },
-
-  afterEach: function() {
-    Ember.run( App, App.destroy );
   }
 });
 

@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import $ from "jquery";
 
 export default function getData(adapter, className, query) {
   var apiUrl = adapter.get("host") + "/" + adapter.get("namespace");

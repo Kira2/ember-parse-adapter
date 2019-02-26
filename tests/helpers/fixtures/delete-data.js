@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import $ from "jquery";
 
 export default function deleteData(adapter, className, id) {
   var applicationId = adapter.get("applicationId");

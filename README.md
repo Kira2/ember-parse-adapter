@@ -1,15 +1,20 @@
 # Ember Data Adapter for parse-server
 
-An [Ember Data](https://github.com/emberjs/data) plugin built to use the [Parse REST API](http://parseplatform.github.io/docs/rest/guide/). This is a full Ember implementation against the parse-server REST API without the use of the Parse JavaScript SDK.
+An [Ember Data](https://github.com/emberjs/data) plugin built to use the [Parse REST API](https://docs.parseplatform.org/rest/guide/). This is a full Ember implementation against the parse-server REST API without the use of the Parse JavaScript SDK.
 
 If you are not familiarized with the new open source project [parse-server](https://github.com/ParsePlatform/parse-server), you should visit the project page first.
+
+## Compatibility
+
+* Ember.js v2.18 or above
+* Ember CLI v2.13 or above
 
 ## Features
 
 ##### EmberParseAdapter.Serializer
 
 * Provides the translation of objectId to id for identity mapping.
-* Provides encoding of hasMany associations to arrays of [Parse Pointer objects](http://parseplatform.github.io/docs/rest/guide/#arrays).
+* Provides encoding of hasMany associations to arrays of [Parse Pointer objects](https://docs.parseplatform.org/rest/guide/#arrays).
 
 ##### EmberParseAdapter.Adapter
 
@@ -28,7 +33,7 @@ Is stored at the special user endpoint at parse-server.
 
 ##### EmberParseAdapter.Transforms
 
-* Provides transforms for date, file, object and geo types at parse-server.
+* Provides transforms for date, file, geo types and object at parse-server.
 
 ## Get started
 
@@ -37,9 +42,9 @@ You'll need to run [parse-server](https://github.com/ParsePlatform/parse-server)
 * The url of your parse-server ("http://localhost:1337" is the default value)
 * The URL prefix of your Parse API ("parse" is the default value)
 * The ID of your application
-* The REST API Key of your application (only if you configure parse-server to require it)
+* The REST API Key of your application (only if your parse-server requires it)
 
-You will need these to configure the ParseAdapter via entries in the `config/environment.js` file:
+You will need this to configure the ParseAdapter via entries in the `config/environment.js` file:
 
 ```javascript
 var ENV = {
@@ -49,13 +54,13 @@ var ENV = {
     parseUrl: '<THE URL OF THE PARSE SERVER HERE>',
     parseNamespace: '<THE URL PREFIX OF THE API HERE>',
     applicationId: '<YOUR APP ID HERE>',
-    restApiId: '<YOUR REST API KEY HERE>' // (only if you use a Parse.com account)
+    restApiId: '<YOUR REST API KEY HERE>' // (only if your parse-server requires it)
   }
 };
 ```
 
-Any model using this adapter will be stored on Parse. Create models
-as you would normally:
+Any model using this adapter will be stored on Parse.
+Create models as you would normally:
 
 ```javascript
 App.Post = DS.Model.extend({
@@ -78,7 +83,6 @@ App.Post = DS.Model.extend({
 
 * `git clone` this repository
 * `npm install`
-* `bower install`
 
 ## Running
 
@@ -87,7 +91,7 @@ App.Post = DS.Model.extend({
 
 ## Running Tests
 
-* `npm test` (Runs `ember try:testall` to test your addon against multiple Ember versions)
+* `npm test:all` (Runs `ember try:each` to test your addon against multiple Ember versions)
 * `ember test`
 * `ember test --server`
 
