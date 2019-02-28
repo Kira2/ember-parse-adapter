@@ -1,4 +1,8 @@
-import Ember from "ember";
+import { computed, get } from "@ember/object";
+import { merge } from "@ember/polyfills";
+import { capitalize, camelize } from "@ember/string";
+import { isEmpty, typeOf } from "@ember/utils";
+import { Promise, reject } from "rsvp";
 import DS from "ember-data";
 
 export default DS.RESTAdapter.extend({
@@ -7,7 +11,7 @@ export default DS.RESTAdapter.extend({
   host: "http://localhost:1337", // url of the parse-server
   namespace: "parse", // url prefix of the API
 
-  sessionToken: Ember.computed("headers.X-Parse-Session-Token", {
+  sessionToken: computed("headers.X-Parse-Session-Token", {
     get: function get() {
       return this.get("headers.X-Parse-Session-Token");
     },
@@ -25,8 +29,8 @@ export default DS.RESTAdapter.extend({
   init: function() {
     this._super();
     this.set("headers", {
-      "X-Parse-Application-Id" : Ember.get(this, "applicationId"),
-      "X-Parse-REST-API-Key"   : Ember.get(this, "restApiId")
+      "X-Parse-Application-Id" : get(this, "applicationId"),
+      "X-Parse-REST-API-Key"   : get(this, "restApiId")
     });
   },
 
@@ -56,7 +60,7 @@ export default DS.RESTAdapter.extend({
       return "functions";
     }
     else {
-      return "classes/" + Ember.String.capitalize(Ember.String.camelize(type));
+      return "classes/" + capitalize(camelize(type));
     }
   },
 
@@ -89,10 +93,10 @@ export default DS.RESTAdapter.extend({
 
     serializer.serializeIntoHash( data, type, snapshot, { includeId: true } );
 
-    return new Ember.RSVP.Promise( function( resolve, reject ) {
+    return new Promise( function( resolve, reject ) {
       adapter.ajax( adapter.buildURL( type.modelName ), "POST", { data: data } ).then(
         function( json ) {
-          resolve( Ember.merge( data, json ) );
+          resolve( merge( data, json ) );
         },
         function( reason ) {
           reject( reason.errors[0] );
@@ -136,7 +140,7 @@ export default DS.RESTAdapter.extend({
         delete data[key]._batch_ops;
 
         // see "serializeHasMany", when we keep only the objects that are not removed
-        if (Ember.isEmpty(data[key].objects)) {
+        if (isEmpty(data[key].objects)) {
           data[key] = null;
         }
       }
@@ -148,16 +152,16 @@ export default DS.RESTAdapter.extend({
       batch_ops_promise = adapter.ajax( adapter.buildURL( type.modelName, id ), "PUT", { data: batch_ops } );
     }
     else {
-      batch_ops_promise = Ember.RSVP.Promise.resolve();
+      batch_ops_promise = Promise.resolve();
     }
 
-    return new Ember.RSVP.Promise( function( resolve, reject ) {
+    return new Promise( function( resolve, reject ) {
       batch_ops_promise.then(
         function() {
           adapter.ajax( adapter.buildURL( type.modelName, id ), "PUT", { data: data } ).then(
             function( json ) {
               // This is the essential bit - merge response data onto existing data.
-              resolve( Ember.merge( data, json ) );
+              resolve( merge( data, json ) );
             },
             function( reason ) {
               reject( reason.errors[0] );
@@ -180,7 +184,7 @@ export default DS.RESTAdapter.extend({
   deleteRecord: function (store, type, snapshot) {
     return this._super(store, type, snapshot)["catch"] (
       function(response) {
-        return Ember.RSVP.reject(response.errors[0]);
+        return reject(response.errors[0]);
       }
     );
   },
@@ -192,7 +196,7 @@ export default DS.RESTAdapter.extend({
   * provides a Relation query for parse-server objects.
   */
   findHasMany: function( store, snapshot, url, relationship ) {
-    var parseClassName = Ember.String.capitalize( snapshot.modelName );
+    var parseClassName = capitalize( snapshot.modelName );
 
     var relatedInfo_ = JSON.parse( url ),
         query        = {
@@ -233,7 +237,7 @@ export default DS.RESTAdapter.extend({
   query: function ( store, type, query ) {
     var _query = query;
 
-    if ( _query.where && "string" !== Ember.typeOf( _query.where ) ) {
+    if ( _query.where && "string" !== typeOf( _query.where ) ) {
       _query.where = JSON.stringify( _query.where );
     }
     else if (( !_query.where ) && ( !_query.order ) && ( !_query.limit ) &&

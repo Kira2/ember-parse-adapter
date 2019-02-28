@@ -2,9 +2,12 @@
 * @description Allow model classes to correctly handle relations remove operations
 * @see serializer::serializeHasMany and serializer::serializeAttribute
 */
-import Ember from "ember";
+import Mixin from "@ember/object/mixin";
+import { A } from "@ember/array";
+import { capitalize, camelize } from "@ember/string";
+import { isNone } from "@ember/utils";
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   _deleted: {}, // contains the pointers of each object to remove for each relation: eg { "relationship1_key": [],  "relationship2_key": [], etc. }
 
   /**
@@ -19,7 +22,7 @@ export default Ember.Mixin.create({
 
       // if the added object was previsouly removed, remove it from the list of the items to delete from the relation
       var deleted = this.get("_deleted");
-      var deleted_items = Ember.A(deleted[key]) || Ember.A([]);
+      var deleted_items = A(deleted[key]) || A([]);
 
       var items = deleted_items.filterBy("objectId", model.id);
       deleted_items.removeObjects(items);
@@ -36,7 +39,7 @@ export default Ember.Mixin.create({
   removeFromRelation (key, model) {
     if (key && model) {
       var deleted = this.get("_deleted");
-      var className = Ember.String.capitalize(Ember.String.camelize(model.constructor.typeKey));
+      var className = capitalize(camelize(model.constructor.typeKey));
 
       deleted[key] = deleted[key] || [];
 
@@ -58,9 +61,9 @@ export default Ember.Mixin.create({
 
     for (var key in deleted) {
       var relation = this.get(key);
-      var deleted_items = Ember.A(deleted[key]);
+      var deleted_items = A(deleted[key]);
 
-      if (!Ember.isNone(relation)) {
+      if (!isNone(relation)) {
         for (var i = 0; i < deleted_items.length; i++) {
           var item = relation.findBy("id", deleted_items[i].objectId);
           relation.removeObject(item);

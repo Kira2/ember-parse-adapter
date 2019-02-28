@@ -1,4 +1,8 @@
 import Ember from "ember";
+import { A } from "@ember/array";
+import { merge } from "@ember/polyfills";
+import { dasherize, camelize, capitalize } from "@ember/string";
+import { isEmpty, isNone, typeOf } from "@ember/utils";
 import DS from "ember-data";
 
 export default DS.RESTSerializer.extend({
@@ -14,8 +18,10 @@ export default DS.RESTSerializer.extend({
   * @description Overrides ember-data function.
   */
   normalizeArrayResponse: function( store, primaryType, payload ) {
+    var inflector = new Ember.Inflector(Ember.Inflector.defaultRules);
     var namespacedPayload = {};
-    namespacedPayload[ Ember.String.pluralize( primaryType.modelName ) ] = payload.results;
+
+    namespacedPayload[ inflector.pluralize( primaryType.modelName ) ] = payload.results;
 
     // get the count metadata sent by parse-server if needed
     if ( payload.hasOwnProperty("count") ) {
@@ -43,7 +49,8 @@ export default DS.RESTSerializer.extend({
   * @description Overrides ember-data function.
   */
   modelNameFromPayloadKey: function( key ) {
-    return Ember.String.dasherize( Ember.String.singularize( key ) );
+    var inflector = new Ember.Inflector(Ember.Inflector.defaultRules);
+    return dasherize( inflector.singularize( key ) );
   },
 
 
@@ -70,7 +77,7 @@ export default DS.RESTSerializer.extend({
   */
   normalizeAttributes: function( type, hash ) {
     type.eachAttribute( function( key, meta ) {
-      if ( meta.type === "date" && Ember.typeOf( hash[key] ) === "object" && hash[key].iso ) {
+      if ( meta.type === "date" && typeOf( hash[key] ) === "object" && hash[key].iso ) {
         hash[key] = hash[key].iso;
       }
     });
@@ -84,13 +91,13 @@ export default DS.RESTSerializer.extend({
   * @description Overrides ember-data function.
   */
   extractRelationship: function(relationshipModelName, relationshipHash) {
-    if (Ember.isNone(relationshipHash)) { return null; }
+    if (isNone(relationshipHash)) { return null; }
 
     // When `relationshipHash` is an object it usually means that the relationship
     // is polymorphic. It could however also be embedded resources that the
     // EmbeddedRecordsMixin has be able to process.
 
-    if (Ember.typeOf(relationshipHash) === "object") {
+    if (typeOf(relationshipHash) === "object") {
       if (relationshipHash.__type) {
         if (relationshipHash.__type === "Pointer") {
           return { id: relationshipHash.objectId, type: relationshipModelName };
@@ -142,7 +149,7 @@ export default DS.RESTSerializer.extend({
 
         else if (relationshipHash && relationshipMeta.kind === "hasMany") {
           if ( relationshipMeta.options.array && relationshipHash.length ) {
-            data = Ember.A(relationshipHash).map(function(item) {
+            data = A(relationshipHash).map(function(item) {
               return this.extractRelationship(relationshipMeta.type, item);
             }, this);
             relationship = { data : data };
@@ -170,7 +177,7 @@ export default DS.RESTSerializer.extend({
   * @description Overrides ember-data function.
   */
   serializeIntoHash: function( hash, typeClass, snapshot, options ) {
-    Ember.merge( hash, this.serialize( snapshot, options ) );
+    merge( hash, this.serialize( snapshot, options ) );
   },
 
 
@@ -227,7 +234,7 @@ export default DS.RESTSerializer.extend({
       return "_User";
     }
     else {
-      return Ember.String.capitalize(Ember.String.camelize(key));
+      return capitalize(camelize(key));
     }
   },
 
@@ -238,7 +245,7 @@ export default DS.RESTSerializer.extend({
   */
   serializeHasMany: function( snapshot, json, relationship ) {
     var key   = relationship.key,
-      hasMany = Ember.A(snapshot.hasMany(key)),
+      hasMany = A(snapshot.hasMany(key)),
       options = relationship.options,
       _this   = this;
 
@@ -253,18 +260,18 @@ export default DS.RESTSerializer.extend({
         json[key].__op = "AddUnique";
       }
 
-      var deleted_items = Ember.A([]);
+      var deleted_items = A([]);
       var _deleted = snapshot.get("_deleted");
 
-      if (!Ember.isNone(_deleted) && !Ember.isNone(_deleted[key])) {
-        deleted_items = Ember.A(_deleted[key]);
+      if (!isNone(_deleted) && !isNone(_deleted[key])) {
+        deleted_items = A(_deleted[key]);
       }
 
       // keep only the items that are not removed
       hasMany.forEach( function( child ) {
         var item = deleted_items.findBy("objectId", child.id);
 
-        if (Ember.isEmpty(item)) {
+        if (isEmpty(item)) {
           json[key].objects.push({
             "__type"    : "Pointer",
             "className" : _this.parseClassName(child.type.modelName),
@@ -273,7 +280,7 @@ export default DS.RESTSerializer.extend({
         }
       });
 
-      if ( !Ember.isEmpty(deleted_items) ) {
+      if ( !isEmpty(deleted_items) ) {
         if ( options.relation ) {
           json[key]._batch_ops = { "__op": "RemoveRelation", "objects": deleted_items };
         }

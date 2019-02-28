@@ -1,15 +1,21 @@
-import Ember from "ember";
+import { module, test } from "qunit";
+import { setupTest } from "ember-qunit";
+import { isEmpty } from "@ember/utils";
+import { run } from "@ember/runloop";
 import ObjectTransform from "ember-parse-adapter/transforms/object";
 
 var transform;
 
-module( "Unit - transforms:object", {
-  setup: function() {
+module( "Unit - transforms:object", function(hooks) {
+  setupTest(hooks);
+
+  hooks.beforeEach(function() {
     transform = ObjectTransform.create();
-  },
-  teardown: function() {
-    Ember.run( transform, "destroy" );
-  }
+  });
+
+  hooks.afterEach(function() {
+    run( transform, "destroy" );
+  });
 });
 
 test( "Serializes", function( assert ) {
@@ -20,7 +26,7 @@ test( "Serializes", function( assert ) {
   };
   var result = transform.serialize( object );
 
-  assert.notOk( Ember.isEmpty(result), "get an object" );
+  assert.notOk( isEmpty(result), "get an object" );
   assert.equal( result.property1, "Lorem ipsum Byuff", "property1 is correct" );
   assert.equal( result.property2, 2404, "property2 is correct" );
   assert.deepEqual( result.property3, [23, 12], "property3 is correct" );
@@ -49,7 +55,7 @@ test( "Deserializes the object" , function( assert ) {
   };
   var result = transform.deserialize( object );
 
-  assert.notOk( Ember.isEmpty(result), "get an object" );
+  assert.notOk( isEmpty(result), "get an object" );
   assert.equal( result.property1, "Lorem ipsum Byuff", "property1 is correct" );
   assert.equal( result.property2, 2404, "property2 is correct" );
   assert.deepEqual( result.property3, [23, 12], "property3 is correct" );

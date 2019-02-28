@@ -52,7 +52,7 @@ module( "Integration - ember-parse-adapter", function(hooks) {
     authorIds = [];
     postIds = [];
     commentIds = [];
-  }),
+  });
 
   hooks.afterEach(function() {
     for (let i = 0; i < authorIds.length; i++) {
@@ -66,7 +66,7 @@ module( "Integration - ember-parse-adapter", function(hooks) {
     for (let i = 0; i < commentIds.length; i++) {
       deleteData(adapter, "Comment", commentIds[i]);
     }
-  })
+  });
 });
 
 /**********************************************************************
@@ -219,7 +219,7 @@ var insertData = async function() {
 /**
  * @description create
  */
-test("create", async function(assert) {
+test("ember-parse-adapter / create", async function(assert) {
   assert.expect(75);
 
   // there is nothing into the database
@@ -320,7 +320,7 @@ test("create", async function(assert) {
 /**
  * @description create - merge
  */
-test("create - merge", async function(assert) {
+test("ember-parse-adapter / create - merge", async function(assert) {
   assert.expect(8);
 
   // update some data and save them
@@ -355,7 +355,7 @@ test("create - merge", async function(assert) {
 /**
  * @description update
  */
-test("update", async function(assert) {
+test("ember-parse-adapter / update", async function(assert) {
   assert.expect(7);
 
   // create the data
@@ -399,7 +399,7 @@ test("update", async function(assert) {
 /**
  * @description update - merge
  */
-test("update - merge", async function(assert) {
+test("ember-parse-adapter / update - merge", async function(assert) {
   assert.expect(8);
 
   // create the data
@@ -433,7 +433,7 @@ test("update - merge", async function(assert) {
 /**
  * @description delete
  */
-test("delete", async function(assert) {
+test("ember-parse-adapter / delete", async function(assert) {
   assert.expect(4);
 
   // create the data
@@ -481,7 +481,7 @@ test("delete", async function(assert) {
 /**
  * @description findRecord/findAll/query
  */
-test("findRecord/findAll/query", async function(assert) {
+test("ember-parse-adapter / findRecord/findAll/query", async function(assert) {
   assert.expect(16);
 
   // create the data
@@ -548,7 +548,7 @@ test("findRecord/findAll/query", async function(assert) {
 /**
  * @description belongsTo
  */
-test("belongsTo", async function(assert) {
+test("ember-parse-adapter / belongsTo", async function(assert) {
   assert.expect(7);
 
   // create the data
@@ -592,7 +592,7 @@ test("belongsTo", async function(assert) {
 /**
  * @description relation
  */
-test("relation", async function(assert) {
+test("ember-parse-adapter / relation", async function(assert) {
   assert.expect(19);
 
   // create the data and some new comments
@@ -735,7 +735,7 @@ test("relation", async function(assert) {
 /**
  * @description array
  */
-test("array", async function(assert) {
+test("ember-parse-adapter / array", async function(assert) {
   assert.expect(24);
 
   // create the data
@@ -854,7 +854,7 @@ test("array", async function(assert) {
 /**
  * @description Save error
  */
-test("Save error", async function(assert) {
+test("ember-parse-adapter / Save error", async function(assert) {
   assert.expect(3);
 
   // try to save the author and catch the raised exception
@@ -876,7 +876,7 @@ test("Save error", async function(assert) {
 /**
  * @description Delete error
  */
-test("Delete error", async function(assert) {
+test("ember-parse-adapter / Delete error", async function(assert) {
   assert.expect(3);
 
   // create the author, and set the property to prevent deletion
